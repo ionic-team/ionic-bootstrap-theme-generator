@@ -95,7 +95,17 @@ function isBootstrapButtonThemeSelector(sel) {
 }
 
 function parseBootstrap(req, res, cssString, v, cb) {
-  var p = css.parse(cssString, {});
+  var p;
+  try {
+    p = css.parse(cssString, {});
+  } catch(e) {
+    console.error('Unable to parse', e);
+    res.status(400).json({
+      status: 'error',
+      reason: 'bad_parse'
+    })
+    return;
+  }
 
   if(!p.type || p.stylesheet.parsingErrors.length) {
     res.status(400).json({
