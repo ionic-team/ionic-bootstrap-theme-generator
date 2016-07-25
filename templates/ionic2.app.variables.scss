@@ -19,7 +19,7 @@ $colors: (
     contrast: {{color.contrast}}
   ),
   {% else %}
-  {{color.key}}:  {{color.color}}
+  {{color.key}}:  {{color.color}},
   {% endif %}
 {% endfor %}
 );
