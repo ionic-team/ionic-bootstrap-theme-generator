@@ -2,24 +2,12 @@
 
 @import "globals.core";
 
-// App Shared Color Variables
-// --------------------------------------------------
-// It's highly recommended to change the default colors
-// to match your app's branding. Ionic uses a Sass map of
-// colors so you can add, rename and remove colors as needed.
-// The "primary" color is the only required color in the map.
-// Both iOS and MD colors can be further customized if colors
-// are different per mode.
-
 $colors: (
-{% for color in buttons %}
-  {% if color.contrast %}
+{% for color in buttons %}{% if color.contrast %}
   {{color.key}}:  (
     base: {{color.color}},
     contrast: {{color.contrast}}
-  ),
-  {% else %}
+  ),{% else %}
   {{color.key}}:  {{color.color}},
-  {% endif %}
-{% endfor %}
+  {% endif %}{% endfor %}
 );

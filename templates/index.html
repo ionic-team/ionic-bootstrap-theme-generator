@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Bootstrap 2 Native</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
+
+  <link rel="stylesheet" href="/static/normalize.css">
+  <link rel="stylesheet" href="/static/skeleton.css">
+  <link rel="stylesheet" href="/static/style.css">
+
+
+  <!-- Scripts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="../../dist/images/favicon.png">
+
+</head>
+<body>
+
+  <div id="main">
+    <h1>Bootstrap to Ionic</h1>
+    <p>
+      Bootstrap to Ionic takes a standard bootstrap theme and generates an Ionic
+      theme (1.x/2.x) to match. Works on most themes, unless you've really butchered your bootstrap CSS (naughty programmer!)
+    </p>
+    <form id="formaggio">
+      <div class="fg">
+        Stylesheet URL: <input type="text" class="u-full-width" id="the-url" placeholder="Bootstrap CSS URL">
+      </div>
+      <div class="fg">
+        Ionic version:
+          <input type="radio" name="v" value="1"> 1.x
+          <input type="radio" name="v" value="2" checked> 2.x
+      </div>
+      <div class="fg">
+        <button type="submit" class="button">Generate</button>
+      </div>
+      <div id="error">
+        Unable to generate theme, perhaps your CSS is wonky?
+      </div>
+    </form>
+    <div id="output">
+      <div id="output-text">
+        <pre><code class="scss"></code></pre>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function() {
+      $('#formaggio').submit(function() {
+        $('#error').hide();
+        $('#output').hide();
+        var u = $('#the-url').val();
+        var v = $('[name="v"]:checked').val();
+        console.log('Sending', u, v);
+        $.ajax('/api/v1/parse-bootstrap-url', {
+          type: 'POST',
+          processData: false,
+          contentType: 'application/json',
+          data: JSON.stringify({
+            url: u,
+            v: v
+          }),
+          dataType: 'json',
+          success: function(resp) {
+            $('#error').hide();
+          },
+          error: function(err) {
+            console.error('Unable to generate', err);
+            $('#error').show();
+          },
+        }).done(function(data) {
+          console.log('GOT DATA', data.theme);
+          $('#output').show();
+          $('#output-text code').text(data.theme);
+          $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+          });
+        });
+        return false;
+      })
+    })
+  </script>
+</body>
+</html>

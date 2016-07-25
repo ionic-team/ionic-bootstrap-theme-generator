@@ -11,12 +11,24 @@ app.use(bodyParser.json());
 
 // This is where all the magic happens!
 app.engine('scss', swig.renderFile);
+app.engine('html', swig.renderFile);
 
-app.set('view engine', 'scss');
+app.set('view engine', 'html');
 app.set('views', __dirname + '/templates');
 
+function toIonic1Theme(req, res, theme) {
+  res.render('ionic1.theme.scss', theme, function(err, d) {
+    res.json({
+      theme: d
+    });
+  });
+}
 function toIonic2Theme(req, res, theme) {
-  res.render('ionic2.app.variables.scss', theme);
+  res.render('ionic2.app.variables.scss', theme, function(err, d) {
+    res.json({
+      theme: d
+    });
+  });
 }
 
 function bootstrapThemeNameToIonic2(name) {
@@ -106,19 +118,11 @@ function parseBootstrap(req, res, cssString, cb) {
   cb(theme);
 }
 
-app.post('/api/v1/parse-bootstrap', function(req, res) {
-  parseBoostrap(req, res, req.body.css, function(theme) {
-    res.json({
-      status: 'ok',
-      data: {
-        theme: theme
-      }
-    })
-  });
-
-});
-
 app.post('/api/v1/parse-bootstrap-url', function(req, res) {
+  console.log('Got body', req.body);
+
+  var v = req.body.v || '2';
+
   request(req.body.url, function(err, response, body) {
     if(err) {
       res.status(400).json({
@@ -130,10 +134,20 @@ app.post('/api/v1/parse-bootstrap-url', function(req, res) {
     }
 
     parseBootstrap(req, res, body, function(theme) {
-      toIonic2Theme(req, res, theme);
+      if(v == '1') {
+        toIonic1Theme(req, res, theme);
+      } else {
+        toIonic2Theme(req, res, theme);
+      }
     });
   })
 });
+
+app.get('/', function(req, res) {
+  res.render('index.html')
+});
+
+app.use('/static', express.static('static'));
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');

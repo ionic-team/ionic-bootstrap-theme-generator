@@ -1,0 +1,27 @@
+body, html {
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+#main {
+  max-width: 500px;
+  margin: 50px auto;
+}
+
+h1 {
+  text-transform: uppercase;
+}
+
+#error {
+  display: none;
+  color: #F53E05;
+}
+
+#output {
+  height: 400px;
+  width: 100%;
+}
+#output-text {
+  width: 100%;
+  height: 100%;
+}
