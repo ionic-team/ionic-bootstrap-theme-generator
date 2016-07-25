@@ -18,6 +18,7 @@ h1 {
 }
 
 #output {
+  display: none;
   height: 400px;
   width: 100%;
 }
