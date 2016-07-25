@@ -5,7 +5,7 @@
   <!-- Basic Page Needs
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
-  <title>Bootstrap 2 Native</title>
+  <title>Bootstrap 2 Ionic</title>
   <meta name="description" content="">
   <meta name="author" content="">
 
@@ -58,6 +58,12 @@
       </div>
     </form>
     <div id="output">
+      <p id="help-2">
+        Add or replace your <code>app/theme/app.variables.css</code> with the below SCSS:
+      </p>
+      <p id="help-1">
+        Add the SCSS below to your <code>scss/ionic.app.scss</code> file.
+      </p>
       <div id="output-text">
         <pre><code class="scss"></code></pre>
       </div>
@@ -68,6 +74,8 @@
       $('#formaggio').submit(function() {
         $('#error').hide();
         $('#output').hide();
+        $('#help-1').hide();
+        $('#help-2').hide();
         var u = $('#the-url').val();
         var v = $('[name="v"]:checked').val();
         console.log('Sending', u, v);
@@ -88,7 +96,7 @@
             $('#error').show();
           },
         }).done(function(data) {
-          console.log('GOT DATA', data.theme);
+          $('#help-' + data.v).show();
           $('#output').show();
           $('#output-text code').text(data.theme);
           $('pre code').each(function(i, block) {

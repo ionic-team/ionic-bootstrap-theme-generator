@@ -19,6 +19,7 @@ app.set('views', __dirname + '/templates');
 function toIonic1Theme(req, res, theme) {
   res.render('ionic1.theme.scss', theme, function(err, d) {
     res.json({
+      v: '1',
       theme: d
     });
   });
@@ -26,6 +27,7 @@ function toIonic1Theme(req, res, theme) {
 function toIonic2Theme(req, res, theme) {
   res.render('ionic2.app.variables.scss', theme, function(err, d) {
     res.json({
+      v: '2',
       theme: d
     });
   });
@@ -38,11 +40,22 @@ function bootstrapThemeNameToIonic2(name) {
     'danger': 'danger',
   }[name] || name;
 }
+function bootstrapThemeNameToIonic1(name) {
+  return {
+    'primary': 'positive',
+    'success': 'balanced',
+    'default': 'stable',
+    'info': 'calm',
+    'warning': 'energized',
+    'danger': 'assertive'
+  }[name] || name;
+}
 
-function addButtonColor(theme, rule, color) {
+
+function addButtonColor(theme, rule, color, v) {
   theme['buttons'] = theme['buttons'] || {};
 
-  var ionicThemeName = bootstrapThemeNameToIonic2(color);
+  var ionicThemeName = v == '2' ? bootstrapThemeNameToIonic2(color) : bootstrapThemeNameToIonic1(color);
 
   var backgrounds = {};
   var foregrounds = {};
@@ -81,7 +94,7 @@ function isBootstrapButtonThemeSelector(sel) {
   }[sel];
 }
 
-function parseBootstrap(req, res, cssString, cb) {
+function parseBootstrap(req, res, cssString, v, cb) {
   var p = css.parse(cssString, {});
 
   if(!p.type || p.stylesheet.parsingErrors.length) {
@@ -109,7 +122,7 @@ function parseBootstrap(req, res, cssString, cb) {
       if((selectorIndex = s.indexOf('.btn-')) == 0) {
         if(isBootstrapButtonThemeSelector(s)) {
           color = s.slice(selectorIndex + '.btn-'.length);
-          addButtonColor(theme, rule, color);
+          addButtonColor(theme, rule, color, v);
         }
       }
     }
@@ -133,7 +146,7 @@ app.post('/api/v1/parse-bootstrap-url', function(req, res) {
       return;
     }
 
-    parseBootstrap(req, res, body, function(theme) {
+    parseBootstrap(req, res, body, v, function(theme) {
       if(v == '1') {
         toIonic1Theme(req, res, theme);
       } else {
@@ -149,6 +162,6 @@ app.get('/', function(req, res) {
 
 app.use('/static', express.static('static'));
 
-app.listen(3000, function () {
+app.listen(process.env.PORT || 3000, function () {
   console.log('Example app listening on port 3000!');
 });
